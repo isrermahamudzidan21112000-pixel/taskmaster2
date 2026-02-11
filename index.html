@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description" content="A powerful task management app">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" href="./icon-192.png">
+    <title>TaskMaster - Your Task Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #6366f1;
+        }
+
+        .stat-card .label {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .priority-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .priority-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .priority-btn.active {
+            border-color: currentColor;
+            transform: scale(1.05);
+        }
+
+        .priority-high {
+            color: #ef4444;
+        }
+
+        .priority-high.active {
+            background: #fee2e2;
+        }
+
+        .priority-medium {
+            color: #f59e0b;
+        }
+
+        .priority-medium.active {
+            background: #fef3c7;
+        }
+
+        .priority-low {
+            color: #10b981;
+        }
+
+        .priority-low.active {
+            background: #d1fae5;
+        }
+
+        .tasks-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            min-height: 200px;
+        }
+
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tasks-header h2 {
+            color: #1f2937;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            background: #f3f4f6;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .filter-tab {
+            flex: 1;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: white;
+            color: #6366f1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .task-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .task-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .task-item.priority-high {
+            border-left-color: #ef4444;
+        }
+
+        .task-item.priority-medium {
+            border-left-color: #f59e0b;
+        }
+
+        .task-item.priority-low {
+            border-left-color: #10b981;
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .checkbox.checked {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .checkbox.checked::after {
+            content: "✓";
+            color: white;
+            font-weight: bold;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-text {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .priority-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-high {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .badge-medium {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .badge-low {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .delete-btn:hover {
+            background: #fecaca;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            max-width: 90%;
+        }
+
+        .install-prompt.show {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .install-prompt.show {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .stat-card .number {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 TaskMaster</h1>
+            <p>Get things done, one task at a time</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" id="total-tasks">0</div>
+                <div class="label">Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="active-tasks">0</div>
+                <div class="label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="completed-tasks">0</div>
+                <div class="label">Done</div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="task-input" placeholder="What needs to be done?">
+                <button class="btn btn-primary" onclick="addTask()">Add</button>
+            </div>
+            <div class="priority-selector">
+                <button class="priority-btn priority-high" data-priority="high">🔴 High</button>
+                <button class="priority-btn priority-medium active" data-priority="medium">🟡 Medium</button>
+                <button class="priority-btn priority-low" data-priority="low">🟢 Low</button>
+            </div>
+        </div>
+
+        <div class="tasks-section">
+            <div class="tasks-header">
+                <h2>My Tasks</h2>
+                <button class="btn btn-secondary" onclick="clearCompleted()">Clear Done</button>
+            </div>
+            
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">All</button>
+                <button class="filter-tab" data-filter="active">Active</button>
+                <button class="filter-tab" data-filter="completed">Done</button>
+            </div>
+
+            <div id="tasks-list"></div>
+        </div>
+    </div>
+
+    <div class="install-prompt" id="install-prompt">
+        <span>📱 Install TaskMaster on your phone!</span>
+        <button class="btn btn-primary" onclick="installApp()">Install</button>
+        <button class="btn btn-secondary" onclick="dismissInstall()">Later</button>
+    </div>
+
+    <script src="./app.js"></script>
+</body>
+</html>
